@@ -1,0 +1,63 @@
+GDB or GNU Debugger
+
+$ list					# list the source code 
+	1). list line_number		#list source till specified line_number
+	2). l 
+
+$ break 
+	1). break line_number		# create breakpoint at specified line_number
+
+	2). break function_name()	# create breakpoint at specified function call
+
+$ disassemble				#convert in to assembly language  
+
+	1) disassemble function_name
+
+$ help command_name			# give docs about command_name
+
+$ info registers			# dump of all cpu registers
+		*********************************************
+		rsp -> stack pointer  
+		rip -> intruction pointer
+
+		********************************************	
+
+
+$ print variable_name			# works in same stack frame
+
+$ x					#examine command
+   
+                 x/FMT address
+
+			FMT -> format 
+			address -> address  
+
+**********************************************************************************************************************************************
+$ continue or c				# run program till it hit breakpoint or jump to breakpoint
+
+
+$ next					# run program line by line and and on every hit it prints next line it is going to execute
+					# it don't go into the function i.e., it step over the function
+
+
+$ step					# it runs line by line with stepping into function definations
+
+$ nexti					# per instruction
+
+$ stepi					# per instruction
+
+
+**********************************************************************************************************************************************
+$ info breakpoints			# show all the breakpoints with number
+
+
+$ delete breakpoint_number		# delete specific breakpoint
+
+
+$ bt					#backtrace
+
+
+
+
+
+	
