@@ -1,0 +1,193 @@
+	FILE                    STATUS                         COMMENTS
+	
+1] nft-table-add.c		OK
+2] nft-table-del.c		OK
+3] nft-table-get.c		Ok
+4] nft-table-parse-add.c	  patch required	./nft-table-parse-add json rules.json 
+						Unable to parse file: Node "table" not found
+
+5] nft-table-upd.c                OK              ./nft-table-upd ip x dormant/active works fine
+
+
+6] nft-chain-add.c                  
+7] nft-chain-del.c
+8] nft-chain-get.c
+9] nft-chain-parse-add.c    patch required        ./nft-chain-parse-add json test.json 
+						Unable to parse file: Node "chain" not found
+ 
+10] nft-compat-get.c                OK            ./nft-compat-get  cgroup match 1
+                                               requesting `cgroup' rev=1 type=0
+                                               name=cgroup rev=1 type=1 
+
+					       
+					       ./nft-compat-get  cgroup match 2
+				        	requesting `cgroup' rev=2 type=0
+                                                error: Protocol not supported
+
+						./nft-compat-get  CONNMARK target 1
+						requesting `CONNMARK' rev=1 type=1
+						name=CONNMARK rev=1 type=1 
+
+						./nft-compat-get  CONNMARK target 2
+						requesting `CONNMARK' rev=2 type=1
+					        error: Protocol not supported
+
+
+11] nft-obj-add.c                  OK            ./nft-obj-add ip x foo #works fine and add counter named foo in ip table x 
+
+12] nft-obj-del.c		   OK		 ./nft-obj-del ip x foo #deletes foo object
+
+13] nft-obj-get.c		 Unconfirmed for xml    ./nft-obj-get ip x bar
+						table x name bar use 0 [ counter pkts 0 bytes 0 ]
+ 
+						./nft-obj-get ip x bar json
+						{"table":{"name":"bar","name":"bar","family":"ip","use":0}}
+ 
+14] nft-map-add.c		OK		        ./nft-map-add  ip x a #works fine	
+						Result below
+						map a {
+						type inet_service : inet_service
+						flags constant
+						}
+	
+
+15] nft-rule-add.c     Patch required             ./nft-rule-add ip x y
+						Rule added: tcp dport ssh counter packets 0 bytes 0
+						
+						./nft-rule-add ip6 x y
+						Rule added: payload @nh,72,8 0x6 [invalid type] payload @th,16,16 0x16 \
+							    [invalid type] counter packets 0 bytes 0	
+
+16] nft-rule-del.c             OK			./nft-rule-del ip x y 2 works fine
+
+
+17] nft-rule-get.c             OK                     ./nft-rule-get ip x y   #returns --debug=netlink output for tcp dport ssh
+
+18] nft-rule-parse-add.c     patch required	./nft-rule-parse-add  json test.json 
+						Unable to parse file: Node "rule" not found
+
+19] nft-ruleset-get.c        OK			./nft-ruleset-get #returns --debug=netlink output along with some other info
+
+ 
+20] nt-ruleset-parse-file.c    patch required     ./nft-ruleset-parse-file test.json 
+						fail: Node "table" not found
+
+21] 
+        
+
+table z ip flags 0 use 6
+table d ip flags 0 use 0
+table cvvb ip flags 0 use 0
+./nft-table-get ip z
+table z ip flags 0 use 6
+
+
+./nft-compat-get  cgroup match 1
+requesting `cgroup' rev=1 type=0
+name=cgroup rev=1 type=1 
+
+./nft-compat-get  cgroup match 2
+requesting `cgroup' rev=2 type=0
+error: Protocol not supported
+
+
+
+sudo ./nft-compat-get  CONNMARK target 2
+requesting `CONNMARK' rev=2 type=1
+error: Protocol not supported
+mystictot (master *) examples $ sudo ./nft-compat-get  CONNMARK target 1
+requesting `CONNMARK' rev=1 type=1
+name=CONNMARK rev=1 type=1 
+
+./nft-table-parse-add json rules.json 
+Unable to parse file: Node "table" not found
+./nft-table-upd ip x dormant
+./nft-table-upd ip x active
+
+sudo ./nft-chain-parse-add json test.json 
+Unable to parse file: Node "chain" not found
+
+
+sudo nft list ruleset
+table ip x {
+	counter a {
+		packets 0 bytes 0
+	}
+}
+mystictot (master *) examples $ sudo nft export json 
+{"nftables":[{"table":{"name":"x","family":"ip","flags":0,"use":1}}]}
+mystictot (master *) examples $ sudo nft export json > test.json 
+mystictot (master *) examples $ sudo ./nft-obj- ip x a
+
+ sudo ./nft-obj-get ip6 x json
+{"table":{"name":"a","name":"a","family":"ip6","use":0}}
+mystictot (master *) examples $ sudo ./nft-obj-get ip6 x xml
+
+mystictot (master *) examples $ sudo ./nft-obj-get ip6 x 
+table x name a use 0 [ counter pkts 0 bytes 0 ]
+
+sudo ./nft-obj-get ip x b
+table x name b use 0 [ counter pkts 0 bytes 0 ]
+mystictot (master *) examples $ sudo ./nft-obj-get ip x 
+table x name a use 0 [ counter pkts 0 bytes 0 ]
+table x name b use 0 [ counter pkts 0 bytes 0 ]
+
+sudo ./nft-rule-get ip x y
+ip x y 4 
+  [ payload load 1b @ network header + 9 => reg 1 ]
+  [ cmp eq reg 1 0x00000006 ]
+  [ payload load 2b @ transport header + 2 => reg 1 ]
+  [ cmp eq reg 1 0x00001600 ]
+  [ counter pkts 0 bytes 0 ]
+
+mystictot (master *) examples $ sudo ./nft-rule-get ip json
+{"rule":{"family":"ip","table":"x","chain":"y","handle":4,"expr":[{"type":"payload","dreg":1,"offset":9,"len":1,"base":"network"},{"type":"cmp","sreg":1,"op":"eq","data":{"reg":{"type":"value","len":1,"data0":"0x00000006"}}},{"type":"payload","dreg":1,"offset":2,"len":2,"base":"transport"},{"type":"cmp","sreg":1,"op":"eq","data":{"reg":{"type":"value","len":2,"data0":"0x00001600"}}},{"type":"counter","pkts":0,"bytes":0}]}}
+
+sudo ./nft-rule-parse-add json test.json 
+Unable to parse file: Node "rule" not found
+
+sudo ./nft-ruleset-get 
+table firewall ip flags 0 use 1
+ip firewall incoming use 4 type filter hook input prio 0 policy drop packets 0 bytes 0
+__set0 firewall 3
+	element 00001600  : 0 [end]	element 00005000  : 0 [end]
+ip firewall incoming 2 
+  [ ct load state => reg 1 ]
+  [ bitwise reg 1 = (reg=1 & 0x00000006 ) ^ 0x00000000 ]
+  [ cmp neq reg 1 0x00000000 ]
+  [ immediate reg 0 accept ]
+
+ip firewall incoming 3 2 
+  [ meta load iifname => reg 1 ]
+  [ cmp eq reg 1 0x00006f6c 0x00000000 0x00000000 0x00000000 ]
+  [ immediate reg 0 accept ]
+
+ip firewall incoming 4 3 
+  [ payload load 1b @ network header + 9 => reg 1 ]
+  [ cmp eq reg 1 0x00000001 ]
+  [ payload load 1b @ transport header + 0 => reg 1 ]
+  [ cmp eq reg 1 0x00000008 ]
+  [ immediate reg 0 accept ]
+
+ip firewall incoming 5 4 
+  [ payload load 1b @ network header + 9 => reg 1 ]
+  [ cmp eq reg 1 0x00000006 ]
+  [ payload load 2b @ transport header + 2 => reg 1 ]
+  [ lookup reg 1 set __set0 0x0 ]
+  [ immediate reg 0 accept ]
+
+
+sudo ./nft-ruleset-parse-file test.json 
+fail: Node "table" not found
+
+
+sudo ./nft-ruleset-parse-file rules.json 
+fail: Node "table" not found
+
+sudo ./nft-set-del ip firewall b
+error: Invalid argument
+
+
+sudo ./nft-set-parse-add json set.json 
+Unable to parse file: Node "set" not found
+
