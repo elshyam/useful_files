@@ -62,8 +62,32 @@ $ bt                                      #backtrace
 $ info frame
 $ break filename:function_name            #useful for binary with multiple files
 $ print/x $rip                            # where x represents hex format
-$ gdb --args executablename arg1 arg2 arg3
 $ gdb -tui
+
+To debug binaries with argumenst
+1). $ gdb --args executablename arg1 arg2 arg3
+2). $ gdb execuatble
+   then inside gdb prompt
+   (gdb)run argument1 argument2 ... argumentN
+   to run argument with some file content
+   (gdb) run argument1 argument2 ... argumentN > file 
+   
+   or incase of nft
+   (gdb) run > file argument1 argument2 ... argumentN  works fine
+   for example to debug
+     $ cat rules.json | nft import json
+     $ gdb nft 	       
+       (gdb)run > rules.json import json
+               
+We cannot set "break" at functions which are optimised by the compiler. To check those optimised functions
+either
+"step" into those optimised functions
+or 
+Put the optimisation off at compile time, with following flags
+1)./configure CFLAGS='-g -O0' CXXFLAGS='-g -O0' 
+or 2) make CFLAGS='-g -O0' CXXFLAGS='-g -O0' clean all
+
+
 
 someuseful links: https://blogs.oracle.com/ksplice/8-gdb-tricks-you-should-know
 http://www.dirac.org/linux/gdb/  #Author
